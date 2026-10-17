@@ -1,0 +1,279 @@
+{
+  "meta": {
+    "title": "FormReady – Resize Photo, Signature & PDF to KB for Govt Forms",
+    "description": "Resize photo and signature to 20 KB, 50 KB or any size, compress PDF, put Aadhaar or PAN on one A4 page and merge PDFs. Free, no upload — works in your browser."
+  },
+  "site": {
+    "brand": "FormReady",
+    "language": "Language",
+    "private": "Free, private, and never uploaded",
+    "footer": "Runs entirely in your browser — your files never leave this device.",
+    "skip": "Skip to content",
+    "themeDark": "Switch to dark mode",
+    "themeLight": "Switch to light mode",
+    "builtBy": "Built by"
+  },
+  "nav": {
+    "image": "Photo & sign",
+    "pdf": "PDF size",
+    "idCard": "ID card",
+    "merge": "Merge PDF"
+  },
+  "common": {
+    "remove": "Remove",
+    "rotate": "Rotate",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "reset": "Reset",
+    "done": "Done",
+    "advanced": "Advanced",
+    "maxSize": "Max size",
+    "maxSizeOptional": "Max size (optional)",
+    "kbPlaceholder": "e.g. 50",
+    "optional": "optional",
+    "kb": "KB",
+    "original": "Original",
+    "result": "Result",
+    "download": "Download {format}",
+    "readyTitle": "Ready to upload",
+    "fitsLimit": "{size} — fits your {range} limit.",
+    "finalSize": "Final size: {size}",
+    "pages": "{count, plural, one {# page} other {# pages}}",
+    "working": "Working…",
+    "couldntOpen": "Couldn't open this file",
+    "failed": "Couldn't finish",
+    "format": "Format",
+    "pdf": "PDF",
+    "jpg": "JPG",
+    "png": "PNG"
+  },
+  "image": {
+    "metaTitle": "Resize Photo & Signature to 20 KB, 50 KB Online – Free",
+    "metaDescription": "Reduce photo and signature size to the exact KB for SSC, UPSC, IBPS, NEET and other govt forms. Free, nothing is uploaded, in 11 Indian languages.",
+    "title": "Resize photo & signature for govt forms",
+    "subtitle": "Get your photo, signature or document under the exact KB limit for SSC, UPSC, IBPS, NEET and state forms.",
+    "kind": "This is a",
+    "photo": "Photo",
+    "signature": "Signature",
+    "document": "Document",
+    "status": {
+      "noImage": "Add or tap an image in Your files to start.",
+      "noLimit": "Enter the max size — it resizes automatically.",
+      "working": "Resizing…",
+      "done": "Done — download below.",
+      "invalid": "Check the values above."
+    },
+    "belowMinTitle": "Resized, but below the minimum",
+    "belowMinBody": "This is the largest we could make it without going over {max} KB.",
+    "keptAsIs": "{size} — already within your {range} limit, so the picture is kept as is. Only hidden location and camera details were removed.",
+    "quality": "quality {value}%",
+    "advanced": {
+      "title": "Advanced options",
+      "description": "Only needed if your form has extra rules.",
+      "minSize": "Minimum size",
+      "minHint": "If the form also sets a minimum.",
+      "dims": "Exact dimensions",
+      "dimsHint": "If the form asks for a fixed width × height. The image is centre-cropped to fit.",
+      "width": "Width",
+      "height": "Height",
+      "clean": "Clean up signature",
+      "cleanHint": "Crops empty space and makes the paper pure white. Output is black & white.",
+      "cleanDoc": "Make text clearer",
+      "cleanDocHint": "Turns the page black & white with pure white paper. Good for phone photos of certificates and marksheets."
+    },
+    "validation": {
+      "maxMin": "Enter at least 1 KB.",
+      "maxHuge": "That's more than 10 MB — no resizing needed.",
+      "minInvalid": "Enter a valid number.",
+      "minOverMax": "Minimum must be smaller than the maximum.",
+      "dimsBoth": "Enter both width and height.",
+      "dimsMin": "Width and height must be at least 10 px."
+    },
+    "faq": {
+      "q1": "Is my image uploaded anywhere?",
+      "a1": "No. Everything happens in your browser on your own device, and location and camera details (EXIF) are removed from the resized file.",
+      "q2": "The form says 50 KB, but my file shows 48.8 KB. Why?",
+      "a2": "Some websites count 1 KB as 1000 bytes and others as 1024. We aim under the stricter reading, so the file passes on every portal.",
+      "q3": "My form asks for exact pixels or a minimum size.",
+      "a3": "Open Advanced to set a minimum size, an exact width × height, or PNG format. The quick presets are common limits; always check your form's own rules."
+    },
+    "presetUnder": "Under {max} KB",
+    "presetUnderMB": "Under {max} MB"
+  },
+  "pdf": {
+    "metaTitle": "Compress PDF to 100 KB, 200 KB or 1 MB Online – Free",
+    "metaDescription": "Reduce PDF size to the KB limit of your application form. Compress certificates, marksheets and scans for free — nothing is uploaded.",
+    "title": "Make your PDF smaller",
+    "subtitle": "Shrink certificates, marksheets and scans to the size your form accepts.",
+    "quality": "Quality",
+    "high": "High",
+    "balanced": "Balanced",
+    "small": "Smallest",
+    "status": {
+      "noFile": "Add or tap a PDF in Your files to start.",
+      "working": "Compressing page {page} of {total}…",
+      "done": "Done — download below."
+    },
+    "resultBody": "{from} → {to} ({percent}% smaller)",
+    "unchanged": "Your PDF is already this small — no change needed.",
+    "note": "Pages are saved as images, so text in the new PDF can't be selected or searched."
+  },
+  "idCard": {
+    "metaTitle": "Aadhaar & PAN Card Front and Back on One A4 Page – Free",
+    "metaDescription": "Put both sides of your Aadhaar, PAN, voter ID or driving licence on one A4 page at real card size. Download as PDF, JPG or PNG — free and private.",
+    "title": "Put both sides of your ID card on one page",
+    "subtitle": "Aadhaar, PAN, voter ID, driving licence — any card.",
+    "front": "Front side",
+    "back": "Back side",
+    "cardSize": "Card size",
+    "actual": "Real size",
+    "large": "Large",
+    "actualHint": "Prints at the real card size on A4.",
+    "tip": "Tip: crop your photos to the card edges for the cleanest print.",
+    "status": {
+      "noCards": "Tap photos in Your files for the front and back of your card.",
+      "working": "Making your A4 page…",
+      "done": "Done — download below."
+    },
+    "resultBody": "A4 page · {size}",
+    "pickSide": "Tap a photo in Your files"
+  },
+  "merge": {
+    "metaTitle": "Merge PDF and Images into One PDF Online – Free",
+    "metaDescription": "Combine PDFs and photos into a single PDF, put pages in order and fit them to A4. Free, private, nothing is uploaded.",
+    "title": "Merge PDFs and images into one PDF",
+    "subtitle": "Join PDFs and photos into one file, in the order you want.",
+    "a4": "Make every page A4",
+    "a4Hint": "Pages and images are scaled to fit A4 paper.",
+    "merge": "Merge {count, plural, one {# file} other {# files}}",
+    "needTwo": "Add at least two files to merge.",
+    "image": "Image",
+    "resultBody": "{pages} · {size}",
+    "pickMore": "Tap more files in Your files to add them. Tap a checked file to take it out."
+  },
+  "errors": {
+    "unknown": "Something went wrong. Please try again.",
+    "notImage": "That doesn't look like an image. Please choose a JPG or PNG file.",
+    "decode": "Your browser can't open this image. Please convert it to JPG or PNG first.",
+    "canvas": "Your browser couldn't create a drawing canvas.",
+    "encode": "Couldn't save the image.",
+    "minOverMax": "Minimum size is larger than the maximum size.",
+    "fixedTooBig": "Can't fit a {w}×{h} px image under your size limit. Try a larger limit, smaller dimensions, or JPG.",
+    "tooBig": "This can't be made small enough for your size limit. Try a larger limit.",
+    "tooBigPng": "This can't be made small enough for your size limit. Try a larger limit or JPG format.",
+    "notPdf": "That doesn't look like a PDF file.",
+    "pdfEncrypted": "This PDF is password-protected. Remove the password and try again.",
+    "pdfBroken": "This PDF looks damaged and can't be opened.",
+    "pdfTooBig": "This PDF can't be made small enough for your size limit. Try a larger limit.",
+    "noCards": "Add at least one side of the card."
+  },
+  "library": {
+    "title": "Your files",
+    "hint": "Tap a file to use it in the tool. Files stay only until you close or reload this tab.",
+    "clear": "Clear all",
+    "remove": "Remove {name}",
+    "made": "Made",
+    "keep": "Save to my files",
+    "kept": "Saved to your files",
+    "emptyTitle": "Add your photo, signature or PDF",
+    "emptyHint": "Tap to choose, or drop files here. They stay on this device.",
+    "addTile": "Add"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "This page doesn't exist. Your files are still here — pick a tool to keep going.",
+    "back": "Go to Photo & sign"
+  },
+  "seo": {
+    "howTitle": "How it works",
+    "faqTitle": "Questions",
+    "sizesTitle": "Popular sizes",
+    "sizesImage": "Image",
+    "sizesSignature": "Signature",
+    "sizesPdf": "PDF",
+    "linkImage": "Image to {size}",
+    "linkSignature": "Signature to {size}",
+    "linkPdf": "PDF to {size}",
+    "home": "Home",
+    "steps": {
+      "image": {
+        "s1t": "Add your photo or signature",
+        "s1b": "Drop a JPG or PNG, or tap to choose one from your phone or computer.",
+        "s2t": "Enter the size limit",
+        "s2b": "Type the maximum KB your form allows, or tap a common size.",
+        "s3t": "Download",
+        "s3b": "It resizes instantly to just under your limit. Download it and upload it to your form."
+      },
+      "pdf": {
+        "s1t": "Add your PDF",
+        "s1b": "Certificates, marksheets, scanned documents — any PDF.",
+        "s2t": "Choose quality or size",
+        "s2b": "Pick a quality, or enter the maximum size your form allows.",
+        "s3t": "Download",
+        "s3b": "Get a smaller PDF that fits the limit, ready to upload."
+      },
+      "idCard": {
+        "s1t": "Add both sides",
+        "s1b": "Add a photo or scan of the front and back of your Aadhaar, PAN or other card.",
+        "s2t": "Choose size and format",
+        "s2b": "Real size prints each side at 85.6 × 54 mm. Pick PDF, JPG or PNG.",
+        "s3t": "Download or print",
+        "s3b": "Get one A4 page with both sides, ready to print or upload."
+      },
+      "merge": {
+        "s1t": "Add your files",
+        "s1b": "Add PDFs and photos in any mix.",
+        "s2t": "Put them in order",
+        "s2b": "Move files up or down. Turn on A4 to make every page the same size.",
+        "s3t": "Merge and download",
+        "s3b": "Get one PDF with all your pages."
+      }
+    },
+    "faq": {
+      "pdf": {
+        "q1": "Will the text stay readable?",
+        "a1": "Pages are saved as images to make them smaller, so text stays readable but can't be selected. Choose High quality if you need it sharper.",
+        "q2": "Is my PDF uploaded?",
+        "a2": "No. The PDF is opened and compressed inside your browser, on your own device.",
+        "q3": "What if my PDF is already small enough?",
+        "a3": "If it is already under your limit, your original file is kept unchanged."
+      },
+      "idCard": {
+        "q1": "Will it print at the real card size?",
+        "a1": "Yes. With Real size selected, each side prints at 85.6 × 54 mm — the size of an Aadhaar or PAN card — on A4 paper.",
+        "q2": "Which cards does it work with?",
+        "a2": "Aadhaar, PAN, voter ID, driving licence, ration card or any other card of the standard size.",
+        "q3": "Can I upload the result to a form?",
+        "a3": "Yes. Choose PDF, JPG or PNG, and set a maximum size if the form has a limit."
+      },
+      "merge": {
+        "q1": "Can I mix PDFs and photos?",
+        "a1": "Yes. Each photo becomes its own page, and with A4 turned on every page is fitted to A4 paper.",
+        "q2": "Is there a limit on files?",
+        "a2": "No fixed limit. Very large files depend on your device's memory, because everything happens in your browser.",
+        "q3": "Are my files uploaded?",
+        "a3": "No. Merging happens on your own device; nothing is sent anywhere."
+      }
+    },
+    "landing": {
+      "image": {
+        "title": "Resize Image to {size} Online – Free & Private",
+        "h1": "Resize image to {size}",
+        "description": "Reduce your photo to {size} in seconds for online forms and job applications. Free, keeps the best quality under {size}, and nothing is uploaded.",
+        "intro": "Add your photo and it is resized to just under {size} automatically, keeping as much quality and resolution as the limit allows. Works with JPG, JPEG and PNG, on phone or computer."
+      },
+      "signature": {
+        "title": "Resize Signature to {size} Online – Free",
+        "h1": "Resize signature to {size}",
+        "description": "Reduce your scanned signature to {size} for SSC, IBPS, NEET and other application forms. Crops empty space and whitens the paper. Free, nothing is uploaded.",
+        "intro": "Add a photo or scan of your signature. Empty margins are cropped, the paper is made white, and it is saved just under {size}."
+      },
+      "pdf": {
+        "title": "Compress PDF to {size} Online – Free, No Upload",
+        "h1": "Compress PDF to {size}",
+        "description": "Reduce PDF file size to {size} for government and exam forms. Compress certificates, marksheets and scanned documents in your browser — free, nothing is uploaded.",
+        "intro": "Add your PDF and it is compressed to just under {size}. Scanned certificates and marksheets shrink the most."
+      }
+    }
+  }
+}

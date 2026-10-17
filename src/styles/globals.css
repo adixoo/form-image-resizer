@@ -1,0 +1,347 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* Dark mode is a class on <html>, set from the theme toggle (or the OS setting). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Design system: paper-white canvas, black pills, hairline cards. Dark mode
+ * mirrors it: near-black canvas, white pills, and the one inverted "look here"
+ * surface (the result card) turns light.
+ */
+
+/* ---------------------------------------------------------------- Tokens */
+
+@theme {
+  /* Brand */
+  --color-ink: #000000;
+  --color-ink-deep: #090909;
+
+  /* Surfaces */
+  --color-canvas: #ffffff;
+  --color-surface-soft: #fafafa;
+  --color-surface-dark: #171717;
+  --color-hairline: #e5e5e5;
+  --color-hairline-strong: #d4d4d4;
+
+  /* Text */
+  --color-charcoal: #525252;
+  --color-body: #737373;
+  --color-mute: #a3a3a3;
+  --color-on-dark: #ffffff;
+  --color-on-dark-mute: rgb(255 255 255 / 0.7);
+
+  /* Semantic (the system has none on marketing pages; a form needs errors) */
+  --color-danger: #d92d20;
+
+  /* Terminal dots */
+  --color-terminal-red: #ff5f56;
+  --color-terminal-yellow: #ffbd2e;
+  --color-terminal-green: #27c93f;
+
+  /* Spacing: 8px base. `section` is the 88px gap between major blocks. */
+  --spacing-section: 5.5rem;
+
+  /* Radius: pills for anything interactive, 12px for cards. */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 0.75rem;
+}
+
+@theme inline {
+  /* DM Sans carries both display and body; its geometric forms echo the pill shapes. */
+  --font-display: var(--font-dm-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  /* No monospace anywhere: numbers use tabular figures in the sans face instead. */
+  --font-mono: var(--font-sans);
+  /* Tailwind's base styles use this for <code>/<pre>/<kbd>. */
+  --default-mono-font-family: var(--font-sans);
+  --font-heading: var(--font-display);
+
+  /* shadcn/ui semantic colors, mapped onto the tokens above */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+:root {
+  color-scheme: light;
+  /* Self-hosted via @fontsource/dm-sans (imported in src/layouts/base.astro). */
+  --font-dm-sans: "DM Sans";
+  --radius: 0.75rem;
+  --background: #ffffff;
+  --foreground: #000000;
+  --card: #ffffff;
+  --card-foreground: #000000;
+  --popover: #ffffff;
+  --popover-foreground: #000000;
+  --primary: #000000;
+  --primary-foreground: #ffffff;
+  --secondary: #fafafa;
+  --secondary-foreground: #000000;
+  --muted: #fafafa;
+  --muted-foreground: #737373;
+  --accent: #fafafa;
+  --accent-foreground: #000000;
+  --destructive: #d92d20;
+  --border: #e5e5e5;
+  --input: #e5e5e5;
+  /* ring/50 in components resolves to the system's rgba(59,130,246,0.5) */
+  --ring: rgb(59 130 246);
+}
+
+.dark {
+  color-scheme: dark;
+  /*
+   * A soft charcoal rather than near-black: easier on the eyes, and cards,
+   * pills and borders stay visible against it. One neutral (zinc) family.
+   */
+  /* Design tokens */
+  --color-ink: #f4f4f5;
+  --color-ink-deep: #ffffff;
+  --color-canvas: #18181b;
+  --color-surface-soft: #27272a;
+  --color-hairline: #2f2f35;
+  --color-hairline-strong: #46464e;
+  --color-charcoal: #d4d4d8;
+  --color-body: #b4b4bc;
+  --color-mute: #8b8b94;
+  --color-danger: #f87171;
+  /* The inverted surface and text on ink pills flip together. */
+  --color-surface-dark: #f4f4f5;
+  --color-on-dark: #18181b;
+  --color-on-dark-mute: rgb(24 24 27 / 0.65);
+  /* shadcn/ui semantic colors */
+  --background: #18181b;
+  --foreground: #f4f4f5;
+  --card: #1c1c20;
+  --card-foreground: #f4f4f5;
+  --popover: #222226;
+  --popover-foreground: #f4f4f5;
+  --primary: #f4f4f5;
+  --primary-foreground: #18181b;
+  --secondary: #27272a;
+  --secondary-foreground: #f4f4f5;
+  --muted: #27272a;
+  --muted-foreground: #b4b4bc;
+  --accent: #27272a;
+  --accent-foreground: #f4f4f5;
+  --destructive: #f87171;
+  --border: #2f2f35;
+  --input: #3a3a41;
+  --ring: rgb(96 165 250);
+}
+
+/* Applied for a moment while switching themes so colours fade instead of snap. */
+.theme-fade,
+.theme-fade *,
+.theme-fade *::before,
+.theme-fade *::after {
+  transition:
+    background-color 250ms ease,
+    border-color 250ms ease,
+    color 250ms ease,
+    fill 250ms ease !important;
+}
+
+/* ------------------------------------------------------- Type utilities */
+
+@utility type-display-xl {
+  font-family: var(--font-display);
+  font-size: 2.25rem;
+  font-weight: 500;
+  line-height: 1.11;
+  /* Large DM Sans reads loose at 0; a touch of negative tracking firms it up. */
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  @media (width < 40rem) {
+    font-size: 1.75rem;
+    line-height: 1.15;
+  }
+}
+
+/* Page heading in the hero: the one place type gets big. */
+@utility type-display-hero {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+  @media (width >= 40rem) {
+    font-size: 2.75rem;
+    line-height: 1.08;
+  }
+  @media (width >= 64rem) {
+    font-size: 3.25rem;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+}
+
+@utility type-display-lg {
+  font-family: var(--font-display);
+  font-size: 1.875rem;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+@utility type-heading-lg {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.33;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+@utility type-heading-md {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+@utility type-heading-sm {
+  font-family: var(--font-sans);
+  font-size: 1.125rem;
+  font-weight: 500;
+  line-height: 1.56;
+}
+
+@utility type-body-md {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+@utility type-body-strong {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+@utility type-body-sm {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.43;
+}
+
+@utility type-body-sm-strong {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.43;
+}
+
+@utility type-caption-sm {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.33;
+}
+
+@utility type-button-md {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+/* -------------------------------------------------- Surface utilities */
+
+/* Level 1: flat white card with a 1px hairline. No shadows anywhere. */
+@utility surface-card {
+  /* White in light mode; a step above the page in dark mode. */
+  background-color: var(--card);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-lg);
+}
+
+/* Level 2: the single inverted "look here" surface per page. */
+@utility surface-inverted {
+  background-color: var(--color-surface-dark);
+  color: var(--color-on-dark);
+  border-radius: var(--radius-lg);
+}
+
+/* Soft gray pill: install snippets, chips, command tags. */
+@utility surface-pill {
+  background-color: var(--color-surface-soft);
+  color: var(--color-ink);
+  border-radius: 9999px;
+}
+
+/* Vertical rhythm between major blocks: 88px desktop → 64px tablet → 48px mobile. */
+@utility stack-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  @media (width >= 48rem) {
+    gap: 4rem;
+  }
+  @media (width >= 64rem) {
+    gap: var(--spacing-section);
+  }
+}
+
+/* --------------------------------------------------------------- Base */
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply bg-canvas font-sans text-ink antialiased;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+  body {
+    @apply min-h-dvh bg-background text-foreground type-body-md;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/*
+ * Help text under the tool is written for the tool its URL opens. When another
+ * tool is chosen in-page (body[data-tool] changes), that text is hidden.
+ */
+body:not([data-tool="image"]) [data-seo-for="image"],
+body:not([data-tool="pdf"]) [data-seo-for="pdf"],
+body:not([data-tool="idCard"]) [data-seo-for="idCard"],
+body:not([data-tool="merge"]) [data-seo-for="merge"] {
+  display: none;
+}

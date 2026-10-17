@@ -1,0 +1,74 @@
+---
+import type { GetStaticPaths } from "astro"
+
+import BaseLayout from "@/layouts/base.astro"
+import SeoContent from "@/components/site/seo-content.astro"
+import { ToolsApp } from "@/components/tools-app"
+import { getMessages, getTranslator } from "@/i18n/messages"
+import { LOCALES, localizedPath, type Locale } from "@/i18n/routing"
+import type { ToolId } from "@/lib/file-library"
+import { jsonLdFor, landingText } from "@/lib/seo-content"
+import { LANDING_PAGES, type LandingPage } from "@/lib/seo-pages"
+import { TOOLS } from "@/lib/tools"
+
+// One static page per language for every tool ("/", "/pdf-compress",
+// "/hi/id-card", …) and every keyword page ("/resize-image-to-50kb",
+// "/ta/compress-pdf-to-200kb", …), so search engines can rank each one. In the
+// browser it's still a single page: the tool tabs switch in place.
+export const getStaticPaths: GetStaticPaths = () => {
+  // getStaticPaths runs apart from the rest of the page, so helpers live here.
+  const slug = (locale: Locale, href: string) =>
+    localizedPath(locale, href).replace(/^\//, "") || undefined
+  return LOCALES.flatMap((locale) => [
+    ...TOOLS.map((tool) => ({
+      params: { slug: slug(locale, tool.href) },
+      props: { locale, tool: tool.id, href: tool.href },
+    })),
+    ...LANDING_PAGES.map((landing) => ({
+      params: { slug: slug(locale, landing.href) },
+      props: { locale, tool: landing.tool, href: landing.href, landing },
+    })),
+  ])
+}
+
+interface Props {
+  locale: Locale
+  tool: ToolId
+  href: string
+  landing?: LandingPage
+}
+
+const { locale, tool, href, landing } = Astro.props
+const t = getTranslator(locale)
+const page = landing
+  ? landingText(t, landing)
+  : { title: t(`${tool}.metaTitle`), description: t(`${tool}.metaDescription`), h1: undefined, intro: undefined }
+const jsonLd = jsonLdFor({
+  site: Astro.site!,
+  locale,
+  tool,
+  href,
+  title: page.title,
+  description: page.description,
+  landing,
+})
+---
+
+<BaseLayout
+  locale={locale}
+  pageHref={href}
+  title={page.title}
+  description={page.description}
+  jsonLd={jsonLd}
+  bodyTool={tool}
+>
+  <ToolsApp
+    client:load
+    initialTool={tool}
+    locale={locale}
+    messages={getMessages(locale)}
+    page={landing ? { heading: page.h1!, title: page.title, href } : undefined}
+    prefill={landing ? { maxKB: landing.maxKB, imageKind: landing.imageKind } : undefined}
+  />
+  <SeoContent locale={locale} tool={tool} intro={page.intro} />
+</BaseLayout>

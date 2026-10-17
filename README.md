@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FormReady
 
-## Getting Started
+Resize photos and signatures to the exact KB limit of Indian government and exam forms, compress PDFs, put both sides of an ID card on one A4 page, and merge PDFs. Available in English and 10 Indian languages.
 
-First, run the development server:
+Everything runs in the browser. Files never leave the device: there is no server code, and the Content Security Policy blocks the page from sending data anywhere (`connect-src 'self'`).
+
+## Stack
+
+- [Astro](https://astro.build) (static output) with React islands for the tools
+- Tailwind CSS v4 and shadcn/ui (Base UI) components
+- `use-intl` for translations (`messages/*.json`, English is the fallback)
+- `pdf.js` to render PDF pages, `pdf-lib` to write PDFs
+
+## Develop
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install
+bun run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The site runs at http://localhost:4321. `predev`/`prebuild` copy the pdf.js worker, fonts and decoders into `public/pdfjs` so they are served from the site's own origin.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+bun run build
+bun run preview
+```
 
-## Learn More
+`dist/` is a plain static site. `public/_headers` carries the security headers for hosts that support that file (Netlify, Cloudflare Pages); on other hosts, set the same headers in their config.
 
-To learn more about Next.js, take a look at the following resources:
+## SEO
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Live at https://formready.adibitz.com (`site` in `astro.config.mjs`).
+- Every page has a canonical URL, `hreflang` links to all 11 languages, Open Graph/Twitter tags with `public/og.png`, and JSON-LD (WebApplication, FAQPage, breadcrumbs).
+- Keyword pages for popular sizes (`src/lib/seo-pages.ts`), e.g. `/resize-image-to-50kb`, `/resize-signature-to-20kb`, `/compress-pdf-to-200kb`, in every language. Each opens the tool with that size filled in. Add a size there and it gets a page, a sitemap entry and a "Popular sizes" link.
+- `@astrojs/sitemap` writes `sitemap-index.xml` with language alternates; `public/robots.txt` points to it. URLs never end in a slash.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Layout
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `src/pages/[...slug].astro` builds one page per language × tool and keyword page (`/`, `/pdf-compress`, `/hi/id-card`, `/resize-image-to-50kb`, …)
+- `src/layouts/base.astro` holds the head, CSP and the client router (which keeps "Your files" in memory between pages)
+- `src/components/tools-app.tsx` is the interactive part of each page: hero, tool tabs, the shared files bar and all four tools (tabs switch in place)
+- `src/components/site/seo-content.astro` is the static help text (steps, FAQ, popular sizes) under the tool
+- `src/lib/` has the image, PDF and ID-card engines

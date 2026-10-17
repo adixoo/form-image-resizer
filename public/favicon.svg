@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- FormReady: a form page with a check, black pill-rounded tile -->
+  <rect width="32" height="32" rx="8" fill="#000"/>
+  <path d="M10 7.5h8.5l4 4V24a.5.5 0 0 1-.5.5H10a.5.5 0 0 1-.5-.5V8a.5.5 0 0 1 .5-.5Z" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="m12.5 17 2.6 2.6 4.6-5" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

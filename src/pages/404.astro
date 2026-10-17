@@ -1,0 +1,22 @@
+---
+import BaseLayout from "@/layouts/base.astro"
+import { getTranslator } from "@/i18n/messages"
+import { DEFAULT_LOCALE } from "@/i18n/routing"
+
+// A static site has one 404 page; it is served in English for every language.
+const t = getTranslator(DEFAULT_LOCALE)
+---
+
+<BaseLayout locale={DEFAULT_LOCALE} pageHref="/404" title={t("notFound.title")} noindex>
+  <main id="main" class="flex flex-1 flex-col items-center justify-center gap-4 py-24 text-center">
+    <p class="type-body-sm tabular-nums text-mute">404</p>
+    <h1 class="type-display-xl text-ink">{t("notFound.title")}</h1>
+    <p class="max-w-[28rem] type-body-md text-body">{t("notFound.body")}</p>
+    <a
+      href="/"
+      class="mt-2 inline-flex h-12 items-center justify-center rounded-full bg-primary px-6 type-button-md text-base text-primary-foreground transition-colors hover:bg-ink/85"
+    >
+      {t("notFound.back")}
+    </a>
+  </main>
+</BaseLayout>

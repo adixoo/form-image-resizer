@@ -1,0 +1,86 @@
+---
+import { getTranslator } from "@/i18n/messages"
+import type { Locale } from "@/i18n/routing"
+import type { ToolId } from "@/lib/file-library"
+import { faqFor, popularSizeGroups, stepsFor } from "@/lib/seo-content"
+
+interface Props {
+  locale: Locale
+  tool: ToolId
+  /** Keyword pages open with a short intro about their size. */
+  intro?: string
+}
+
+const { locale, tool, intro } = Astro.props
+const t = getTranslator(locale)
+const steps = stepsFor(t, tool)
+const faq = faqFor(t, tool)
+const groups = popularSizeGroups(t, locale)
+---
+
+{/*
+  Readable, crawlable help text under the tool. It belongs to the tool this URL
+  opens; when another tab is chosen in-page it is hidden (see [data-seo-for]
+  in globals.css).
+*/}
+<div class="flex flex-col gap-12 pb-16">
+  <div data-seo-for={tool} class="flex flex-col gap-12">
+    {intro && <p class="max-w-[42rem] type-body-md text-body">{intro}</p>}
+
+    <section class="flex flex-col gap-4">
+      <h2 class="type-heading-lg text-ink">{t("seo.howTitle")}</h2>
+      <ol class="grid gap-4 sm:grid-cols-3">
+        {
+          steps.map((s, i) => (
+            <li class="flex flex-col gap-1.5">
+              <span class="flex size-7 items-center justify-center rounded-full bg-surface-soft type-body-sm tabular-nums text-ink">
+                {i + 1}
+              </span>
+              <h3 class="type-body-strong text-ink">{s.title}</h3>
+              <p class="type-body-sm text-body">{s.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="flex flex-col gap-2">
+      <h2 class="type-heading-lg text-ink">{t("seo.faqTitle")}</h2>
+      <dl class="flex flex-col">
+        {
+          faq.map(({ q, a }) => (
+            <div class="flex flex-col gap-1 border-b border-hairline py-4">
+              <dt class="type-body-strong text-ink">{q}</dt>
+              <dd class="type-body-sm text-body">{a}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+  </div>
+
+  <nav aria-labelledby="popular-sizes" class="flex flex-col gap-4">
+    <h2 id="popular-sizes" class="type-heading-lg text-ink">{t("seo.sizesTitle")}</h2>
+    <div class="grid gap-6 sm:grid-cols-3">
+      {
+        groups.map((g) => (
+          <div class="flex flex-col gap-2">
+            <h3 class="type-body-sm-strong text-charcoal">{g.heading}</h3>
+            <ul class="flex flex-wrap gap-1.5">
+              {g.links.map((l) => (
+                <li>
+                  <a
+                    href={l.href}
+                    class="inline-flex h-7 items-center rounded-full bg-surface-soft px-3 type-caption-sm font-medium text-ink transition-colors hover:bg-hairline/60"
+                  >
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </nav>
+</div>

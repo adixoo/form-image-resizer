@@ -1,0 +1,210 @@
+---
+import { ClientRouter } from "astro:transitions"
+import "@fontsource/dm-sans/400.css"
+import "@fontsource/dm-sans/500.css"
+import "@fontsource/dm-sans/600.css"
+import "../styles/globals.css"
+
+import { Moon, Sun } from "lucide-react"
+
+import { LanguageSelect } from "@/components/site/language-select"
+import { getTranslator } from "@/i18n/messages"
+import { DEFAULT_LOCALE, LANGUAGES, LOCALES, localizedPath, type Locale } from "@/i18n/routing"
+import { absoluteUrl, OG_LOCALE } from "@/lib/seo-content"
+
+interface Props {
+  locale: Locale
+  title: string
+  /** Page path without the language prefix ("/", "/pdf-compress", …). */
+  pageHref: string
+  description?: string
+  /** Structured data (JSON-LD) objects for this page. */
+  jsonLd?: object[]
+  /** Keep the page out of search results (e.g. 404). */
+  noindex?: boolean
+  /** Tool the page opens, so its help text shows (see [data-seo-for]). */
+  bodyTool?: string
+}
+
+const { locale, title, pageHref, jsonLd = [], noindex, bodyTool } = Astro.props
+const t = getTranslator(locale)
+const description = Astro.props.description ?? t("meta.description")
+const site = Astro.site!
+const canonical = absoluteUrl(site, locale, pageHref)
+const ogImage = new URL("/og.png", site).href
+// JSON-LD must not contain "<" (it could close the script tag); write it as a
+// JSON unicode escape instead.
+const BACKSLASH = String.fromCharCode(92)
+
+// Files are processed entirely in the browser. connect-src 'self' stops the
+// page from sending anything to another server. 'wasm-unsafe-eval' lets pdf.js
+// run its WebAssembly image decoders; it does not allow eval(). Hosting adds
+// the header-only directives (frame-ancestors, …) from public/_headers.
+const csp = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' blob: data:",
+  "font-src 'self'",
+  `connect-src 'self'${import.meta.env.DEV ? " ws:" : ""}`,
+  "worker-src 'self' blob:",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join("; ")
+---
+
+<!doctype html>
+<html lang={locale} class="h-full" transition:animate="none">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Security-Policy" content={csp} />
+    <meta name="referrer" content="no-referrer" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#18181b" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {/* Every language version of this page, for search engines. */}
+    {
+      !noindex &&
+        LOCALES.map((l) => (
+          <link rel="alternate" hreflang={`${l}-IN`} href={absoluteUrl(site, l, pageHref)} />
+        ))
+    }
+    {!noindex && <link rel="alternate" hreflang="x-default" href={absoluteUrl(site, DEFAULT_LOCALE, pageHref)} />}
+    {/* Link previews (WhatsApp, Facebook, X, Telegram). */}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={t("site.brand")} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content={OG_LOCALE[locale]} />
+    {LOCALES.filter((l) => l !== locale).map((l) => <meta property="og:locale:alternate" content={OG_LOCALE[l]} />)}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    {
+      jsonLd.map((data) => (
+        <script
+          is:inline
+          type="application/ld+json"
+          set:html={JSON.stringify(data).replace(/</g, BACKSLASH + "u003c")}
+        />
+      ))
+    }
+    {/* In-page navigation keeps JS memory, so "Your files" survive switching tools. */}
+    <ClientRouter fallback="swap" />
+    {
+      /*
+        Theme before first paint (no white flash in dark mode): the saved choice,
+        else the OS setting. Re-applied to each page the client router swaps in.
+      */
+    }
+    <script is:inline>
+      ;(function () {
+        function isDark() {
+          var saved = null
+          try {
+            saved = localStorage.getItem("theme")
+          } catch (e) {}
+          return saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches
+        }
+        document.documentElement.classList.toggle("dark", isDark())
+        document.addEventListener("astro:before-swap", function (e) {
+          e.newDocument.documentElement.classList.toggle("dark", isDark())
+        })
+      })()
+    </script>
+  </head>
+  <body class="flex min-h-full flex-col" data-tool={bodyTool}>
+    <a
+      href="#main"
+      class="sr-only z-50 rounded-full bg-ink px-4 py-2 type-button-md text-on-dark focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+    >
+      {t("site.skip")}
+    </a>
+    {/* 40rem on phones and tablets, wider on desktop. */}
+    <div class="mx-auto flex w-full max-w-[40rem] flex-1 flex-col px-4 lg:max-w-[64rem]">
+      <header class="flex h-14 items-center justify-between gap-3 pt-4">
+        <a href={localizedPath(locale, "/")} class="font-display text-[1.1875rem] leading-none font-semibold tracking-[-0.015em] text-ink">{t("site.brand")}</a>
+        <div class="flex items-center gap-2">
+          <LanguageSelect
+            client:load
+            locale={locale}
+            label={t("site.language")}
+            languages={LANGUAGES}
+          />
+          {/* Icon and label follow the current theme through CSS, so no JS render is needed. */}
+          <button
+            type="button"
+            data-theme-toggle
+            class="flex size-9 items-center justify-center rounded-full bg-surface-soft text-ink transition-colors outline-none hover:bg-hairline/60 focus-visible:ring-3 focus-visible:ring-ring/50"
+          >
+            <Moon className="size-4 dark:hidden" strokeWidth={1.75} />
+            <Sun className="hidden size-4 dark:block" strokeWidth={1.75} />
+            <span class="sr-only dark:hidden">{t("site.themeDark")}</span>
+            <span class="sr-only hidden dark:inline">{t("site.themeLight")}</span>
+          </button>
+        </div>
+      </header>
+      <slot />
+      <footer
+        class="mt-auto flex flex-col gap-2 border-t border-hairline py-6 type-caption-sm text-body sm:flex-row sm:items-center sm:justify-between"
+      >
+        <p>{t("site.brand")} · {t("site.footer")}</p>
+        <p>
+          {t("site.builtBy")}{" "}
+          <a
+            href="https://adibitz.com"
+            target="_blank"
+            rel="noopener"
+            class="font-medium text-ink underline-offset-4 hover:underline">adibitz.com</a
+          >
+        </p>
+      </footer>
+    </div>
+
+    <script>
+      import { EASE_OUT, gsap, reducedMotion } from "@/lib/motion"
+
+      // Theme toggle. Delegated so it keeps working after page swaps.
+      document.addEventListener("click", (e) => {
+        if (!(e.target instanceof Element) || !e.target.closest("[data-theme-toggle]")) return
+        const root = document.documentElement
+        const dark = !root.classList.contains("dark")
+        if (!reducedMotion()) {
+          root.classList.add("theme-fade")
+          window.setTimeout(() => root.classList.remove("theme-fade"), 300)
+        }
+        root.classList.toggle("dark", dark)
+        try {
+          localStorage.setItem("theme", dark ? "dark" : "light")
+        } catch {
+          // Private mode or blocked storage: the switch still works for this visit.
+        }
+      })
+
+      // Runs on first load and after every client-router page swap: the page's
+      // main blocks rise in one after another. Astro's own crossfade is off
+      // (transition:animate="none" on <html>) so the two don't stack.
+      document.addEventListener("astro:page-load", () => {
+        if (reducedMotion()) return
+        gsap.from("[data-enter]", {
+          y: 14,
+          autoAlpha: 0,
+          duration: 0.55,
+          ease: EASE_OUT,
+          stagger: 0.06,
+          clearProps: "transform,opacity,visibility",
+        })
+      })
+    </script>
+  </body>
+</html>
