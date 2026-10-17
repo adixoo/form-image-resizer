@@ -34,7 +34,7 @@ bun run preview
 - Live at https://formready.adibitz.com (`site` in `astro.config.mjs`).
 - Every page has a canonical URL, `hreflang` links to all 11 languages, Open Graph/Twitter tags with `public/og.png`, and JSON-LD (WebApplication, FAQPage, breadcrumbs).
 - Keyword pages for popular sizes (`src/lib/seo-pages.ts`), e.g. `/resize-image-to-50kb`, `/resize-signature-to-20kb`, `/compress-pdf-to-200kb`, in every language. Each opens the tool with that size filled in. Add a size there and it gets a page, a sitemap entry and a "Popular sizes" link.
-- `@astrojs/sitemap` writes `sitemap-index.xml` with language alternates; `public/robots.txt` points to it. URLs never end in a slash.
+- `src/pages/sitemap.xml.ts` writes a single `sitemap.xml` (no sitemap index) listing every page in every language with its language alternates; `public/robots.txt` points to it. URLs never end in a slash.
 
 ## Layout
 

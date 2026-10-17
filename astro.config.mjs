@@ -1,12 +1,7 @@
 // @ts-check
 import { defineConfig } from "astro/config"
 import react from "@astrojs/react"
-import sitemap from "@astrojs/sitemap"
 import tailwindcss from "@tailwindcss/vite"
-
-// Keep in sync with src/i18n/routing.ts. Region tags tell search engines these
-// pages are for India.
-const LOCALES = ["en", "hi", "bn", "mr", "te", "ta", "gu", "kn", "ml", "pa", "or"]
 
 // Fully static site: every tool runs in the browser, there is no server code.
 export default defineConfig({
@@ -16,18 +11,8 @@ export default defineConfig({
   // static hosts serve at the slash-free address.
   trailingSlash: "never",
   build: { format: "file" },
-  integrations: [
-    react(),
-    sitemap({
-      // English lives at "/", other languages under "/hi", "/ta", …; the
-      // sitemap links every language version of a page to the others.
-      i18n: {
-        defaultLocale: "en",
-        locales: Object.fromEntries(LOCALES.map((l) => [l, `${l}-IN`])),
-      },
-      filter: (page) => !page.includes("/404"),
-    }),
-  ],
+  // The sitemap is a single file, src/pages/sitemap.xml.ts.
+  integrations: [react()],
   vite: {
     plugins: [tailwindcss()],
   },
