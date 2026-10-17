@@ -33,5 +33,5 @@ export default defineConfig({
   },
   // Not using Astro's built-in CSP: it can't be combined with <ClientRouter />,
   // which keeps "Your files" in memory between tools. The policy is set in
-  // src/layouts/base.astro (meta) and public/_headers (hosting) instead.
+  // src/layouts/base.astro (meta) and vercel.json (hosting) instead.
 })

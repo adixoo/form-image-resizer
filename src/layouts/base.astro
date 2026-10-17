@@ -39,7 +39,7 @@ const BACKSLASH = String.fromCharCode(92)
 // Files are processed entirely in the browser. connect-src 'self' stops the
 // page from sending anything to another server. 'wasm-unsafe-eval' lets pdf.js
 // run its WebAssembly image decoders; it does not allow eval(). Hosting adds
-// the header-only directives (frame-ancestors, …) from public/_headers.
+// the header-only directives (frame-ancestors, …) from vercel.json.
 const csp = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'",

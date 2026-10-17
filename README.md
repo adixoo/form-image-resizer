@@ -27,7 +27,7 @@ bun run build
 bun run preview
 ```
 
-`dist/` is a plain static site. `public/_headers` carries the security headers for hosts that support that file (Netlify, Cloudflare Pages); on other hosts, set the same headers in their config.
+`dist/` is a plain static site, hosted on Vercel. `vercel.json` sets the build, serves `/hi/id-card` from `hi/id-card.html` (`cleanUrls`, no trailing slash), and adds the security headers plus long-lived caching for the hashed files in `/_astro`. Import the GitHub repo in Vercel and it deploys `master` with these settings; no adapter is needed.
 
 ## SEO
 
