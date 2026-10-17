@@ -1,7 +1,18 @@
 
+import { useSyncExternalStore } from "react"
 import { useTranslations } from "use-intl"
 
 import { Button } from "@/components/ui/button"
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -25,7 +36,46 @@ import {
   type Settings,
 } from "@/components/resizer/settings"
 
-/** Rarely needed options live in a side panel so the main flow stays one screen. */
+/**
+ * The panel's parts on each screen size: a side sheet on wider screens, a
+ * bottom drawer (swipe down to close) on phones, where it sits under the thumb.
+ */
+const SHEET = {
+  Root: Sheet,
+  Trigger: SheetTrigger,
+  Content: (props: React.ComponentProps<typeof SheetContent>) => <SheetContent side="right" {...props} />,
+  Header: SheetHeader,
+  Title: SheetTitle,
+  Description: SheetDescription,
+  Footer: SheetFooter,
+  Close: SheetClose,
+}
+const DRAWER = {
+  Root: (props: React.ComponentProps<typeof Drawer>) => <Drawer showSwipeHandle {...props} />,
+  Trigger: DrawerTrigger,
+  Content: DrawerContent,
+  Header: DrawerHeader,
+  Title: DrawerTitle,
+  Description: DrawerDescription,
+  Footer: DrawerFooter,
+  Close: DrawerClose,
+}
+
+const WIDE = "(min-width: 48rem)"
+
+function useWide() {
+  return useSyncExternalStore(
+    (onChange) => {
+      const query = window.matchMedia(WIDE)
+      query.addEventListener("change", onChange)
+      return () => query.removeEventListener("change", onChange)
+    },
+    () => window.matchMedia(WIDE).matches,
+    () => true
+  )
+}
+
+/** Rarely needed options live in a panel so the main flow stays one screen. */
 export function AdvancedSheet({
   settings,
   errors,
@@ -43,21 +93,22 @@ export function AdvancedSheet({
   const tc = useTranslations("common")
   const tv = useTranslations("image.validation")
   const active = advancedSummary(settings)
+  const P = useWide() ? SHEET : DRAWER
 
   return (
-    <Sheet defaultOpen={defaultOpen}>
-      <SheetTrigger
+    <P.Root defaultOpen={defaultOpen}>
+      <P.Trigger
         autoFocus={autoFocus}
         render={<Button variant="ghost" size="sm" className="-mr-3 shrink-0" />}
       >
         <AdvancedLabel count={active.length} />
-      </SheetTrigger>
+      </P.Trigger>
       {/* Don't auto-focus an input on touch: it would pop the keyboard over the panel. */}
-      <SheetContent side="right" initialFocus={(openType) => openType !== "touch"}>
-        <SheetHeader>
-          <SheetTitle>{t("title")}</SheetTitle>
-          <SheetDescription>{t("description")}</SheetDescription>
-        </SheetHeader>
+      <P.Content initialFocus={(openType) => openType !== "touch"}>
+        <P.Header>
+          <P.Title>{t("title")}</P.Title>
+          <P.Description>{t("description")}</P.Description>
+        </P.Header>
 
         <div className="flex flex-1 flex-col gap-6 overflow-y-auto p-6">
           <Field
@@ -123,7 +174,7 @@ export function AdvancedSheet({
           )}
         </div>
 
-        <SheetFooter className="flex-row">
+        <P.Footer className="flex-row">
           <Button
             variant="outline"
             className="flex-1"
@@ -140,10 +191,10 @@ export function AdvancedSheet({
           >
             {tc("reset")}
           </Button>
-          <SheetClose render={<Button className="flex-1" />}>{tc("done")}</SheetClose>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+          <P.Close render={<Button className="flex-1" />}>{tc("done")}</P.Close>
+        </P.Footer>
+      </P.Content>
+    </P.Root>
   )
 }
 
