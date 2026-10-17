@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef } from "react"
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs"
 import { cn } from "cn"
 
-import { EASE_OUT, motion, placeAt, reducedMotion } from "@/lib/motion"
+import { placeAt, slideTo } from "@/lib/motion"
 
 function Tabs({ className, orientation = "horizontal", ...props }: TabsPrimitive.Root.Props) {
   return (
@@ -34,12 +34,8 @@ function TabsList({ className, children, ...props }: TabsPrimitive.List.Props) {
         const active = el.querySelector<HTMLElement>("[data-slot=tabs-trigger][data-active]")
         if (!active) return
         const to = { x: active.offsetLeft, width: active.offsetWidth }
-        const gsap = motion()?.gsap
-        if (gsap && animate && placed && !reducedMotion()) {
-          gsap.to(pill, { ...to, duration: 0.4, ease: EASE_OUT, overwrite: true })
-        } else {
-          placeAt(pill, to)
-        }
+        if (animate && placed) slideTo(pill, to, 0.4)
+        else placeAt(pill, to)
         if (!placed) {
           placed = true
           el.dataset.ready = ""

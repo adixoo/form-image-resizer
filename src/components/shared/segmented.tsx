@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef } from "react"
 import type { LucideIcon } from "lucide-react"
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { EASE_OUT, motion, placeAt, reducedMotion } from "@/lib/motion"
+import { placeAt, slideTo } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
 /**
@@ -37,12 +37,8 @@ export function Segmented<T extends string>({
         const active = el.querySelector<HTMLElement>('[aria-pressed="true"]')
         if (!active) return
         const to = { x: active.offsetLeft, width: active.offsetWidth }
-        const gsap = motion()?.gsap
-        if (gsap && animate && !reducedMotion()) {
-          gsap.to(th, { ...to, duration: 0.35, ease: EASE_OUT, overwrite: true })
-        } else {
-          placeAt(th, to)
-        }
+        if (animate) slideTo(th, to, 0.35)
+        else placeAt(th, to)
       }
       place(placed.current)
       if (!placed.current) {

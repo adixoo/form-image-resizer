@@ -1,4 +1,4 @@
-import { lazy, Suspense, use, useEffect, useLayoutEffect, useRef, useState } from "react"
+import { startTransition, use, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { Lock } from "lucide-react"
 import { IntlProvider, useTranslations } from "use-intl"
 
@@ -9,7 +9,7 @@ import type { Messages } from "@/i18n/messages"
 import { localizedPath, parsePath, type Locale } from "@/i18n/routing"
 import type { ImageKind } from "@/lib/compress"
 import type { ToolId } from "@/lib/file-library"
-import { EASE_OUT, motion, reducedMotion } from "@/lib/motion"
+import { EASE_OUT, motion, reducedMotion, whenIdle } from "@/lib/motion"
 import { TOOLS } from "@/lib/tools"
 
 /** Values a keyword page fills in, e.g. /resize-image-to-50kb → photo, 50 KB. */
@@ -18,42 +18,33 @@ export interface Prefill {
   imageKind?: ImageKind
 }
 
-// Each tool's code downloads only when that tool is first opened (or its tab
-// is pointed at or focused, just before), so a page loads one tool, not four.
-const LOADERS: Record<ToolId, () => Promise<{ default: React.ComponentType<{ prefill?: Prefill }> }>> = {
-  image: () => import("@/components/resizer/resizer-app").then((m) => ({ default: m.ResizerApp })),
-  pdf: () => import("@/components/pdf/pdf-compress-app").then((m) => ({ default: m.PdfCompressApp })),
-  idCard: () => import("@/components/id-card/id-card-app").then((m) => ({ default: m.IdCardApp })),
-  merge: () => import("@/components/pdf/pdf-merge-app").then((m) => ({ default: m.PdfMergeApp })),
-}
-const APPS = {
-  image: lazy(LOADERS.image),
-  pdf: lazy(LOADERS.pdf),
-  idCard: lazy(LOADERS.idCard),
-  merge: lazy(LOADERS.merge),
-}
+type ToolComponent = React.ComponentType<{ prefill?: Prefill }>
 
-// The page's starting tool is loaded before rendering instead (the page build
-// awaits preloadTool), so its HTML is complete in the page rather than a
-// placeholder. In the browser the page hydrates once that tool's code is in.
-const READY: Partial<Record<ToolId, React.ComponentType<{ prefill?: Prefill }>>> = {}
+// Each tool's code is its own download. The page's starting tool is loaded
+// before rendering (the page build awaits preloadTool, so its HTML is complete
+// in the page; the browser hydrates once its code is in). The others load when
+// the page is idle, or sooner if their tab is pointed at or focused.
+const LOADERS: Record<ToolId, () => Promise<ToolComponent>> = {
+  image: () => import("@/components/resizer/resizer-app").then((m) => m.ResizerApp),
+  pdf: () => import("@/components/pdf/pdf-compress-app").then((m) => m.PdfCompressApp),
+  idCard: () => import("@/components/id-card/id-card-app").then((m) => m.IdCardApp),
+  merge: () => import("@/components/pdf/pdf-merge-app").then((m) => m.PdfMergeApp),
+}
+const READY: Partial<Record<ToolId, ToolComponent>> = {}
 const PRELOADS: Partial<Record<ToolId, Promise<void>>> = {}
 
 export function preloadTool(id: ToolId) {
-  return (PRELOADS[id] ??= LOADERS[id]().then((m) => {
-    READY[id] = m.default
+  return (PRELOADS[id] ??= LOADERS[id]().then((App) => {
+    READY[id] = App
   }))
 }
 
-function ToolPanel({ id, initial, prefill }: { id: ToolId; initial: boolean; prefill?: Prefill }) {
-  if (!initial) {
-    const App = APPS[id]
-    return (
-      <Suspense fallback={<div className="h-80 animate-pulse rounded-lg bg-surface-soft" />}>
-        <App />
-      </Suspense>
-    )
-  }
+/**
+ * A tool, once its code is in. Tool switches are transitions, so if the code
+ * is still on its way the current tool stays on screen until it arrives
+ * instead of flashing a placeholder.
+ */
+function ToolPanel({ id, prefill }: { id: ToolId; prefill?: Prefill }) {
   if (!READY[id]) use(preloadTool(id))
   const App = READY[id]!
   return <App prefill={prefill} />
@@ -113,8 +104,10 @@ function Tools({
     if (next === tool) return
     // Stateless entry: Astro's router ignores it, our popstate handler owns it.
     history.pushState(null, "", localizedPath(locale, href))
-    setTool(next)
+    startTransition(() => setTool(next))
   }
+
+  useEffect(() => whenIdle(() => TOOLS.forEach(({ id }) => void preloadTool(id))), [])
 
   // Back/forward between tools of this language: switch in place. Runs in the
   // capture phase so it wins over Astro's router, which would reload the page.
@@ -124,7 +117,7 @@ function Tools({
       const target = TOOLS.find((x) => (x.id === initialTool && pageHref ? pageHref : x.href) === href)
       if (l !== locale || !target) return
       e.stopImmediatePropagation()
-      setTool(target.id)
+      startTransition(() => setTool(target.id))
     }
     window.addEventListener("popstate", onPopState, { capture: true })
     return () => window.removeEventListener("popstate", onPopState, { capture: true })
@@ -200,8 +193,8 @@ function Tools({
                     // in a new tab on Ctrl/⌘-click.
                     nativeButton={false}
                     render={<a href={localizedPath(locale, hrefOf(id))} />}
-                    onPointerEnter={() => void LOADERS[id]()}
-                    onFocus={() => void LOADERS[id]()}
+                    onPointerEnter={() => void preloadTool(id)}
+                    onFocus={() => void preloadTool(id)}
                     onClick={(e) => {
                       if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) {
                         e.preventBaseUIHandler()
@@ -227,7 +220,7 @@ function Tools({
           {TOOLS.map(({ id }) => (
             // keepMounted: every opened tool keeps its file, settings and result.
             <TabsContent key={id} value={id} keepMounted data-switch={id === tool ? "" : undefined}>
-              {opened.has(id) && <ToolPanel id={id} initial={id === initialTool} prefill={prefill} />}
+              {opened.has(id) && <ToolPanel id={id} prefill={id === initialTool ? prefill : undefined} />}
             </TabsContent>
           ))}
         </div>
