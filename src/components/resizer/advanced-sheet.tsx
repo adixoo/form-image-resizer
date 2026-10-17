@@ -1,5 +1,4 @@
 
-import { SlidersHorizontal } from "lucide-react"
 import { useTranslations } from "use-intl"
 
 import { Button } from "@/components/ui/button"
@@ -16,6 +15,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Switch } from "@/components/ui/switch"
+import { AdvancedLabel } from "@/components/resizer/advanced"
 import { Field, KBInput } from "@/components/resizer/fields"
 import {
   advancedSummary,
@@ -30,10 +30,14 @@ export function AdvancedSheet({
   settings,
   errors,
   onChange,
+  defaultOpen,
+  autoFocus,
 }: {
   settings: Settings
   errors: SettingErrors
   onChange: (patch: Partial<Settings>) => void
+  defaultOpen?: boolean
+  autoFocus?: boolean
 }) {
   const t = useTranslations("image.advanced")
   const tc = useTranslations("common")
@@ -41,15 +45,12 @@ export function AdvancedSheet({
   const active = advancedSummary(settings)
 
   return (
-    <Sheet>
-      <SheetTrigger render={<Button variant="ghost" size="sm" className="-mr-3 shrink-0" />}>
-        <SlidersHorizontal data-icon="inline-start" />
-        {tc("advanced")}
-        {active.length > 0 && (
-          <span className="flex size-5 items-center justify-center rounded-full bg-ink type-caption-sm text-on-dark">
-            {active.length}
-          </span>
-        )}
+    <Sheet defaultOpen={defaultOpen}>
+      <SheetTrigger
+        autoFocus={autoFocus}
+        render={<Button variant="ghost" size="sm" className="-mr-3 shrink-0" />}
+      >
+        <AdvancedLabel count={active.length} />
       </SheetTrigger>
       {/* Don't auto-focus an input on touch: it would pop the keyboard over the panel. */}
       <SheetContent side="right" initialFocus={(openType) => openType !== "touch"}>

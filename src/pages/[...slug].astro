@@ -3,7 +3,7 @@ import type { GetStaticPaths } from "astro"
 
 import BaseLayout from "@/layouts/base.astro"
 import SeoContent from "@/components/site/seo-content.astro"
-import { ToolsApp } from "@/components/tools-app"
+import { preloadTool, ToolsApp } from "@/components/tools-app"
 import { getMessages, getTranslator } from "@/i18n/messages"
 import { LOCALES, localizedPath, type Locale } from "@/i18n/routing"
 import type { ToolId } from "@/lib/file-library"
@@ -39,6 +39,8 @@ interface Props {
 }
 
 const { locale, tool, href, landing } = Astro.props
+// Render the starting tool into the page itself (the others load on demand).
+await preloadTool(tool)
 const t = getTranslator(locale)
 const page = landing
   ? landingText(t, landing)

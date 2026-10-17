@@ -1,53 +1,37 @@
-import { Languages } from "lucide-react"
-import { navigate } from "astro:transitions/client"
+import { lazy, Suspense } from "react"
+import { ChevronDownIcon, Languages } from "lucide-react"
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { localizedPath, parsePath, type Locale } from "@/i18n/routing"
+import { useIntent } from "@/components/shared/use-intent"
+import { selectTriggerClass } from "@/components/ui/select-styles"
+import type { Locale } from "@/i18n/routing"
+
+const loadMenu = () => import("@/components/site/language-menu")
+const LanguageMenu = lazy(() => loadMenu().then((m) => ({ default: m.LanguageMenu })))
 
 /**
- * Language picker. Switches with the client router so "Your files" stay put,
- * and keeps whichever tool is open (tabs change the URL without a page load).
+ * Header language picker. The dropdown's code loads only once someone reaches
+ * for it; until then a look-alike button stands in, so it costs nothing on the
+ * first load of every page.
  */
-export function LanguageSelect({
-  locale,
-  label,
-  languages,
-}: {
+export function LanguageSelect(props: {
   locale: Locale
   label: string
   languages: Record<Locale, string>
 }) {
+  const [intent, bind] = useIntent(loadMenu)
+  const standIn = (
+    <button type="button" aria-label={props.label} data-size="default" className={selectTriggerClass} {...bind}>
+      <Languages className="text-body" />
+      <span data-slot="select-value" className="flex flex-1 text-left">
+        {props.languages[props.locale]}
+      </span>
+      <ChevronDownIcon className="pointer-events-none size-4 text-body" />
+    </button>
+  )
+  if (!intent) return standIn
   return (
-    <Select
-      items={languages}
-      value={locale}
-      onValueChange={(next) => {
-        if (!next || next === locale) return
-        const target = localizedPath(next as Locale, parsePath(location.pathname).href)
-        // The in-page switch relies on the View Transitions API, which stalls if
-        // the browser isn't rendering (e.g. a hidden tab). If it hasn't landed
-        // shortly, fall back to a normal page load.
-        const fallback = window.setTimeout(() => {
-          if (location.pathname !== target) location.assign(target)
-        }, 2500)
-        // Only a successful switch cancels the fallback; a failed one lets it run.
-        navigate(target).then(
-          () => window.clearTimeout(fallback),
-          () => {}
-        )
-      }}
-    >
-      <SelectTrigger aria-label={label}>
-        <Languages className="text-body" />
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent align="end" alignItemWithTrigger={false} className="min-w-44">
-        {Object.entries(languages).map(([code, name]) => (
-          <SelectItem key={code} value={code} lang={code}>
-            {name}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <Suspense fallback={standIn}>
+      <LanguageMenu {...props} defaultOpen={intent === "open"} autoFocus={intent !== "load"} />
+    </Suspense>
   )
 }

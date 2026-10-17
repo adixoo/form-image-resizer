@@ -1,5 +1,5 @@
 
-import { useRef, useState } from "react"
+import { useLayoutEffect, useRef, useState } from "react"
 import { Check, FileText, Plus, UploadCloud, X } from "lucide-react"
 import { useTranslations } from "use-intl"
 
@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { FileInput, IMAGE_TYPES, PDF_TYPES } from "@/components/shared/file-drop"
 import { useCurrentTool } from "@/components/shared/tool-context"
 import { formatKB } from "@/lib/compress"
-import { EASE_POP, gsap, reducedMotion, useGSAP } from "@/lib/motion"
+import { EASE_POP, motion, reducedMotion } from "@/lib/motion"
 import {
   addToLibrary,
   clearLibrary,
@@ -40,12 +40,13 @@ export function FilesBar() {
   // before a page switch don't animate again, only ones added since.
   const seen = useRef<Set<number> | null>(null)
 
-  useGSAP(
+  useLayoutEffect(
     () => {
       const ids = files.map((f) => f.id)
       const before = seen.current
       seen.current = new Set(ids)
-      if (!before || reducedMotion() || !list.current) return
+      const gsap = motion()?.gsap
+      if (!before || !gsap || reducedMotion() || !list.current) return
       const fresh = ids
         .filter((id) => !before.has(id))
         .map((id) => list.current?.querySelector(`[data-file-id="${id}"]`))
@@ -60,12 +61,13 @@ export function FilesBar() {
         clearProps: "transform,opacity,visibility",
       })
     },
-    { dependencies: [files] }
+    [files]
   )
 
   /** Shrink tiles away, then drop them from the list. */
   function animateOut(targets: Element[], done: () => void) {
-    if (reducedMotion() || targets.length === 0) return done()
+    const gsap = motion()?.gsap
+    if (!gsap || reducedMotion() || targets.length === 0) return done()
     gsap.to(targets, {
       scale: 0.8,
       autoAlpha: 0,

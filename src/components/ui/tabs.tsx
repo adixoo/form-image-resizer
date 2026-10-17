@@ -1,8 +1,8 @@
-import { useRef } from "react"
+import { useLayoutEffect, useRef } from "react"
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs"
 import { cn } from "cn"
 
-import { EASE_OUT, gsap, reducedMotion, useGSAP } from "@/lib/motion"
+import { EASE_OUT, motion, placeAt, reducedMotion } from "@/lib/motion"
 
 function Tabs({ className, orientation = "horizontal", ...props }: TabsPrimitive.Root.Props) {
   return (
@@ -24,7 +24,7 @@ function TabsList({ className, children, ...props }: TabsPrimitive.List.Props) {
   const list = useRef<HTMLDivElement>(null)
   const indicator = useRef<HTMLSpanElement>(null)
 
-  useGSAP(
+  useLayoutEffect(
     () => {
       const el = list.current
       const pill = indicator.current
@@ -34,10 +34,11 @@ function TabsList({ className, children, ...props }: TabsPrimitive.List.Props) {
         const active = el.querySelector<HTMLElement>("[data-slot=tabs-trigger][data-active]")
         if (!active) return
         const to = { x: active.offsetLeft, width: active.offsetWidth }
-        if (animate && placed && !reducedMotion()) {
+        const gsap = motion()?.gsap
+        if (gsap && animate && placed && !reducedMotion()) {
           gsap.to(pill, { ...to, duration: 0.4, ease: EASE_OUT, overwrite: true })
         } else {
-          gsap.set(pill, to)
+          placeAt(pill, to)
         }
         if (!placed) {
           placed = true
@@ -56,7 +57,7 @@ function TabsList({ className, children, ...props }: TabsPrimitive.List.Props) {
         ro.disconnect()
       }
     },
-    { scope: list }
+    []
   )
 
   return (

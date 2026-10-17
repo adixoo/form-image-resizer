@@ -13,7 +13,7 @@ import { ToolCard, ToolStatus } from "@/components/shared/tool-card"
 import { decode, encode, formatKB } from "@/lib/compress"
 import { AppError, toAppError } from "@/lib/errors"
 import { fileKind, useIncomingFile, useReportInUse } from "@/lib/file-library"
-import { Flip, reducedMotion } from "@/lib/motion"
+import { motion, reducedMotion, type FlipState } from "@/lib/motion"
 import { countPdfPages, mergeToPdf } from "@/lib/pdf"
 
 interface Item {
@@ -92,15 +92,16 @@ export function PdfMergeApp() {
   // Reordering: record where rows are, re-render, then animate them from the
   // old spots to the new ones (FLIP) so the moved file is easy to follow.
   const listRef = useRef<HTMLOListElement>(null)
-  const flipState = useRef<Flip.FlipState | null>(null)
+  const flipState = useRef<FlipState | null>(null)
   useLayoutEffect(() => {
     const state = flipState.current
     flipState.current = null
-    if (state) Flip.from(state, { duration: 0.35, ease: "power2.inOut" })
+    if (state) motion()?.Flip.from(state, { duration: 0.35, ease: "power2.inOut" })
   }, [items])
 
   function move(index: number, by: -1 | 1) {
-    if (listRef.current && !reducedMotion()) {
+    const Flip = motion()?.Flip
+    if (Flip && listRef.current && !reducedMotion()) {
       flipState.current = Flip.getState(listRef.current.querySelectorAll("[data-flip-id]"))
     }
     const next = [...items]

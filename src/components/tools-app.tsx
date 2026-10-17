@@ -1,11 +1,7 @@
-import { useEffect, useRef, useState } from "react"
+import { lazy, Suspense, use, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { Lock } from "lucide-react"
 import { IntlProvider, useTranslations } from "use-intl"
 
-import { IdCardApp } from "@/components/id-card/id-card-app"
-import { PdfCompressApp } from "@/components/pdf/pdf-compress-app"
-import { PdfMergeApp } from "@/components/pdf/pdf-merge-app"
-import { ResizerApp } from "@/components/resizer/resizer-app"
 import { FilesBar } from "@/components/shared/files-bar"
 import { ToolContext } from "@/components/shared/tool-context"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -13,7 +9,7 @@ import type { Messages } from "@/i18n/messages"
 import { localizedPath, parsePath, type Locale } from "@/i18n/routing"
 import type { ImageKind } from "@/lib/compress"
 import type { ToolId } from "@/lib/file-library"
-import { EASE_OUT, gsap, reducedMotion, useGSAP } from "@/lib/motion"
+import { EASE_OUT, motion, reducedMotion } from "@/lib/motion"
 import { TOOLS } from "@/lib/tools"
 
 /** Values a keyword page fills in, e.g. /resize-image-to-50kb → photo, 50 KB. */
@@ -22,18 +18,52 @@ export interface Prefill {
   imageKind?: ImageKind
 }
 
-const APPS: Record<ToolId, React.ComponentType<{ prefill?: Prefill }>> = {
-  image: ResizerApp,
-  pdf: PdfCompressApp,
-  idCard: IdCardApp,
-  merge: PdfMergeApp,
+// Each tool's code downloads only when that tool is first opened (or its tab
+// is pointed at or focused, just before), so a page loads one tool, not four.
+const LOADERS: Record<ToolId, () => Promise<{ default: React.ComponentType<{ prefill?: Prefill }> }>> = {
+  image: () => import("@/components/resizer/resizer-app").then((m) => ({ default: m.ResizerApp })),
+  pdf: () => import("@/components/pdf/pdf-compress-app").then((m) => ({ default: m.PdfCompressApp })),
+  idCard: () => import("@/components/id-card/id-card-app").then((m) => ({ default: m.IdCardApp })),
+  merge: () => import("@/components/pdf/pdf-merge-app").then((m) => ({ default: m.PdfMergeApp })),
+}
+const APPS = {
+  image: lazy(LOADERS.image),
+  pdf: lazy(LOADERS.pdf),
+  idCard: lazy(LOADERS.idCard),
+  merge: lazy(LOADERS.merge),
+}
+
+// The page's starting tool is loaded before rendering instead (the page build
+// awaits preloadTool), so its HTML is complete in the page rather than a
+// placeholder. In the browser the page hydrates once that tool's code is in.
+const READY: Partial<Record<ToolId, React.ComponentType<{ prefill?: Prefill }>>> = {}
+const PRELOADS: Partial<Record<ToolId, Promise<void>>> = {}
+
+export function preloadTool(id: ToolId) {
+  return (PRELOADS[id] ??= LOADERS[id]().then((m) => {
+    READY[id] = m.default
+  }))
+}
+
+function ToolPanel({ id, initial, prefill }: { id: ToolId; initial: boolean; prefill?: Prefill }) {
+  if (!initial) {
+    const App = APPS[id]
+    return (
+      <Suspense fallback={<div className="h-80 animate-pulse rounded-lg bg-surface-soft" />}>
+        <App />
+      </Suspense>
+    )
+  }
+  if (!READY[id]) use(preloadTool(id))
+  const App = READY[id]!
+  return <App prefill={prefill} />
 }
 
 /**
  * The whole page body: hero, tool tabs, the shared files bar and all four
  * tools. Tabs switch tools in place (no page load) and keep the address bar,
- * title and back button in sync. Every tool stays mounted, so switching back
- * shows exactly what was left there.
+ * title and back button in sync. A tool mounts when first opened and then
+ * stays mounted, so switching back shows exactly what was left there.
  */
 export function ToolsApp({
   initialTool,
@@ -69,6 +99,8 @@ function Tools({
 }) {
   const t = useTranslations()
   const [tool, setTool] = useState(initialTool)
+  const [opened, setOpened] = useState<ReadonlySet<ToolId>>(() => new Set([initialTool]))
+  if (!opened.has(tool)) setOpened(new Set(opened).add(tool))
   // On a keyword page, the first tool's tab keeps that page's own address, so
   // switching away and back returns to "/resize-image-to-50kb", not "/".
   const pageHref = page?.href
@@ -106,24 +138,22 @@ function Tools({
   }, [tool, t, initialTool, page])
 
   // A switched-in tool rises in like the page did on load.
-  useGSAP(
-    () => {
-      if (firstRender.current) {
-        firstRender.current = false
-        return
-      }
-      if (reducedMotion()) return
-      gsap.from("[data-switch]", {
-        y: 10,
-        autoAlpha: 0,
-        duration: 0.4,
-        ease: EASE_OUT,
-        stagger: 0.05,
-        clearProps: "transform,opacity,visibility",
-      })
-    },
-    { dependencies: [tool], scope: root }
-  )
+  useLayoutEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false
+      return
+    }
+    const gsap = motion()?.gsap
+    if (!gsap || reducedMotion() || !root.current) return
+    gsap.from(root.current.querySelectorAll("[data-switch]"), {
+      y: 10,
+      autoAlpha: 0,
+      duration: 0.4,
+      ease: EASE_OUT,
+      stagger: 0.05,
+      clearProps: "transform,opacity,visibility",
+    })
+  }, [tool])
 
   return (
     <ToolContext.Provider value={tool}>
@@ -144,20 +174,20 @@ function Tools({
       >
         <header className="mb-6 flex flex-col items-center pt-4 text-center sm:pt-8">
           <p
-            data-enter
+            data-enter="0"
             className="inline-flex items-center gap-1.5 rounded-full bg-surface-soft px-3.5 py-1.5 type-caption-sm font-medium text-charcoal"
           >
             <Lock className="size-3.5 shrink-0" strokeWidth={2} />
             {t("site.private")}
           </p>
-          <h1 data-enter data-switch className="mt-5 max-w-[22ch] type-display-hero text-ink">
+          <h1 data-enter="1" data-switch className="mt-5 max-w-[22ch] type-display-hero text-ink">
             {tool === initialTool && page ? page.heading : t(`${tool}.title`)}
           </h1>
           <p data-switch className="mt-4 max-w-[36rem] type-body-md text-body sm:text-[1.0625rem]">
             {t(`${tool}.subtitle`)}
           </p>
           {/* Scrolls sideways on narrow phones instead of wrapping. */}
-          <div data-enter className="-mx-4 mt-8 flex w-[calc(100%+2rem)] overflow-x-auto px-4 [scrollbar-width:none]">
+          <div data-enter="2" className="-mx-4 mt-8 flex w-[calc(100%+2rem)] overflow-x-auto px-4 [scrollbar-width:none]">
             {/* Soft track groups the tabs into one control, like the other switches. */}
             <div className="mx-auto rounded-full bg-surface-soft p-1">
               <TabsList>
@@ -170,6 +200,8 @@ function Tools({
                     // in a new tab on Ctrl/⌘-click.
                     nativeButton={false}
                     render={<a href={localizedPath(locale, hrefOf(id))} />}
+                    onPointerEnter={() => void LOADERS[id]()}
+                    onFocus={() => void LOADERS[id]()}
                     onClick={(e) => {
                       if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) {
                         e.preventBaseUIHandler()
@@ -187,20 +219,17 @@ function Tools({
           </div>
         </header>
 
-        <aside data-enter>
+        <aside data-enter="3">
           <FilesBar />
         </aside>
 
-        <div data-enter className="min-w-0">
-          {TOOLS.map(({ id }) => {
-            const App = APPS[id]
-            return (
-              // keepMounted: every tool keeps its file, settings and result.
-              <TabsContent key={id} value={id} keepMounted data-switch={id === tool ? "" : undefined}>
-                <App prefill={id === initialTool ? prefill : undefined} />
-              </TabsContent>
-            )
-          })}
+        <div data-enter="4" className="min-w-0">
+          {TOOLS.map(({ id }) => (
+            // keepMounted: every opened tool keeps its file, settings and result.
+            <TabsContent key={id} value={id} keepMounted data-switch={id === tool ? "" : undefined}>
+              {opened.has(id) && <ToolPanel id={id} initial={id === initialTool} prefill={prefill} />}
+            </TabsContent>
+          ))}
         </div>
 
       </Tabs>

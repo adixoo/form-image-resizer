@@ -5,7 +5,7 @@ import { useTranslations } from "use-intl"
 
 import { useCurrentTool } from "@/components/shared/tool-context"
 import { Button } from "@/components/ui/button"
-import { AdvancedSheet } from "@/components/resizer/advanced-sheet"
+import { Advanced } from "@/components/resizer/advanced"
 import { PresetPicker } from "@/components/resizer/preset-picker"
 import { KBInput, Row } from "@/components/resizer/fields"
 import { ResultPanel, type ResizedImage } from "@/components/resizer/result-panel"
@@ -170,7 +170,7 @@ export function ResizerApp({ prefill }: { prefill?: Prefill }) {
             >
               {t(`status.${status}`)}
             </ToolStatus>
-            <AdvancedSheet settings={settings} errors={errors} onChange={(patch) => update(patch)} />
+            <Advanced settings={settings} errors={errors} onChange={(patch) => update(patch)} />
           </>
         }
       >

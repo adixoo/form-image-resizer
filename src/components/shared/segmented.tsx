@@ -1,8 +1,8 @@
-import { useRef } from "react"
+import { useLayoutEffect, useRef } from "react"
 import type { LucideIcon } from "lucide-react"
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { EASE_OUT, gsap, reducedMotion, useGSAP } from "@/lib/motion"
+import { EASE_OUT, motion, placeAt, reducedMotion } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
 /**
@@ -28,7 +28,7 @@ export function Segmented<T extends string>({
   const thumb = useRef<HTMLSpanElement>(null)
   const placed = useRef(false)
 
-  useGSAP(
+  useLayoutEffect(
     () => {
       const el = track.current
       const th = thumb.current
@@ -37,10 +37,11 @@ export function Segmented<T extends string>({
         const active = el.querySelector<HTMLElement>('[aria-pressed="true"]')
         if (!active) return
         const to = { x: active.offsetLeft, width: active.offsetWidth }
-        if (animate && !reducedMotion()) {
+        const gsap = motion()?.gsap
+        if (gsap && animate && !reducedMotion()) {
           gsap.to(th, { ...to, duration: 0.35, ease: EASE_OUT, overwrite: true })
         } else {
-          gsap.set(th, to)
+          placeAt(th, to)
         }
       }
       place(placed.current)
@@ -53,7 +54,7 @@ export function Segmented<T extends string>({
       ro.observe(el)
       return () => ro.disconnect()
     },
-    { dependencies: [value], scope: track }
+    [value]
   )
 
   return (

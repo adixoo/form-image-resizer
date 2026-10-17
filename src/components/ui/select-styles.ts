@@ -1,0 +1,4 @@
+// Kept apart from select.tsx so a look-alike trigger can be drawn without
+// loading the select's code (see site/language-select.tsx).
+export const selectTriggerClass =
+  "group/select flex w-fit items-center justify-between gap-2 rounded-full border border-transparent bg-surface-soft pr-3 pl-4 type-body-sm-strong whitespace-nowrap text-ink transition-colors outline-none select-none hover:bg-hairline/60 focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:text-mute aria-invalid:border-destructive data-placeholder:text-mute data-popup-open:bg-hairline/60 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"

@@ -62,7 +62,11 @@ export function FileDrop({
   )
 }
 
-/** Hidden file input, for "Change" / "Add more" buttons. */
+/**
+ * Hidden file input, opened by a visible button ("Add", "Change", the drop
+ * area). It is fully hidden rather than visually hidden: the button is what
+ * people and screen readers use, so the input needs no label of its own.
+ */
 export function FileInput({
   ref,
   accept,
@@ -80,8 +84,7 @@ export function FileInput({
       type="file"
       accept={accept}
       multiple={multiple}
-      className="sr-only"
-      tabIndex={-1}
+      hidden
       onClick={(e) => e.stopPropagation()}
       onChange={(e) => {
         const files = [...(e.target.files ?? [])]

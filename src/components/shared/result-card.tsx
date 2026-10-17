@@ -1,11 +1,11 @@
 
-import { useRef, useState } from "react"
+import { useLayoutEffect, useRef, useState } from "react"
 import { Check, Download, FolderPlus } from "lucide-react"
 import { useTranslations } from "use-intl"
 
 import { Button, buttonVariants } from "@/components/ui/button"
 import { addToLibrary, useLibrary } from "@/lib/file-library"
-import { EASE_OUT, gsap, reducedMotion, useGSAP } from "@/lib/motion"
+import { EASE_OUT, motion, reducedMotion } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
 /**
@@ -40,10 +40,11 @@ export function ResultCard({
 
   // On first appearance: bring the card into view, then let it rise in and
   // reveal its parts one after another. Later updates just swap content.
-  useGSAP(
+  useLayoutEffect(
     () => {
       card.current?.scrollIntoView({ behavior: reducedMotion() ? "auto" : "smooth", block: "nearest" })
-      if (reducedMotion() || !card.current) return
+      const gsap = motion()?.gsap
+      if (!gsap || reducedMotion() || !card.current) return
       gsap
         .timeline({ defaults: { ease: EASE_OUT } })
         .from(card.current, { y: 20, autoAlpha: 0, duration: 0.45, clearProps: "transform,opacity,visibility" })
@@ -53,7 +54,7 @@ export function ResultCard({
           "-=0.25"
         )
     },
-    { scope: card }
+    []
   )
 
   function save() {

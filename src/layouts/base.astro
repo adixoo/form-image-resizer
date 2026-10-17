@@ -172,7 +172,7 @@ const csp = [
     </div>
 
     <script>
-      import { EASE_OUT, gsap, reducedMotion } from "@/lib/motion"
+      import { reducedMotion } from "@/lib/motion"
 
       // Theme toggle. Delegated so it keeps working after page swaps.
       document.addEventListener("click", (e) => {
@@ -189,21 +189,6 @@ const csp = [
         } catch {
           // Private mode or blocked storage: the switch still works for this visit.
         }
-      })
-
-      // Runs on first load and after every client-router page swap: the page's
-      // main blocks rise in one after another. Astro's own crossfade is off
-      // (transition:animate="none" on <html>) so the two don't stack.
-      document.addEventListener("astro:page-load", () => {
-        if (reducedMotion()) return
-        gsap.from("[data-enter]", {
-          y: 14,
-          autoAlpha: 0,
-          duration: 0.55,
-          ease: EASE_OUT,
-          stagger: 0.06,
-          clearProps: "transform,opacity,visibility",
-        })
       })
     </script>
   </body>
