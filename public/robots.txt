@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://formready.adibitz.com/sitemap.xml
+Sitemap: https://formseva.adibitz.com/sitemap.xml

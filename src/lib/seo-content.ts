@@ -1,4 +1,5 @@
 import { getTranslator } from "@/i18n/messages"
+import { BRAND_ALIASES } from "@/lib/brand"
 import { DEFAULT_LOCALE, localizedPath, type Locale } from "@/i18n/routing"
 import type { ToolId } from "./file-library"
 import { LANDING_PAGES, sizeLabel, type LandingPage } from "./seo-pages"
@@ -62,6 +63,7 @@ export function jsonLdFor(opts: {
       "@context": "https://schema.org",
       "@type": "WebApplication",
       name: title,
+      alternateName: [t("site.brand"), ...BRAND_ALIASES],
       url,
       description,
       applicationCategory: "MultimediaApplication",
@@ -89,6 +91,7 @@ export function jsonLdFor(opts: {
       "@context": "https://schema.org",
       "@type": "WebSite",
       name: t("site.brand"),
+      alternateName: BRAND_ALIASES,
       url,
       inLanguage: locale,
     })

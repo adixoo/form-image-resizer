@@ -7,6 +7,7 @@ import { preloadTool, ToolsApp } from "@/components/tools-app"
 import { getMessages, getTranslator } from "@/i18n/messages"
 import { LOCALES, localizedPath, type Locale } from "@/i18n/routing"
 import type { ToolId } from "@/lib/file-library"
+import { brandTitle } from "@/lib/brand"
 import { jsonLdFor, landingText } from "@/lib/seo-content"
 import { LANDING_PAGES, type LandingPage } from "@/lib/seo-pages"
 import { TOOLS } from "@/lib/tools"
@@ -42,9 +43,17 @@ const { locale, tool, href, landing } = Astro.props
 // Render the starting tool into the page itself (the others load on demand).
 await preloadTool(tool)
 const t = getTranslator(locale)
-const page = landing
+// The photo tool's own page is the home page: it leads with the brand.
+const home = !landing && tool === "image"
+const text = landing
   ? landingText(t, landing)
-  : { title: t(`${tool}.metaTitle`), description: t(`${tool}.metaDescription`), h1: undefined, intro: undefined }
+  : {
+      title: home ? t("meta.title") : t(`${tool}.metaTitle`),
+      description: home ? t("meta.description") : t(`${tool}.metaDescription`),
+      h1: undefined,
+      intro: undefined,
+    }
+const page = { ...text, title: brandTitle(text.title) }
 const jsonLd = jsonLdFor({
   site: Astro.site!,
   locale,

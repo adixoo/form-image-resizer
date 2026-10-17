@@ -7,6 +7,7 @@ import { ToolContext } from "@/components/shared/tool-context"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { Messages } from "@/i18n/messages"
 import { localizedPath, parsePath, type Locale } from "@/i18n/routing"
+import { brandTitle } from "@/lib/brand"
 import type { ImageKind } from "@/lib/compress"
 import type { ToolId } from "@/lib/file-library"
 import { EASE_OUT, motion, reducedMotion, whenIdle } from "@/lib/motion"
@@ -127,7 +128,9 @@ function Tools({
   // while that tool is open (see [data-seo-for] in globals.css).
   useEffect(() => {
     document.body.dataset.tool = tool
-    document.title = tool === initialTool && page ? page.title : t(`${tool}.metaTitle`)
+    document.title = brandTitle(
+      tool === initialTool && page ? page.title : tool === "image" ? t("meta.title") : t(`${tool}.metaTitle`)
+    )
   }, [tool, t, initialTool, page])
 
   // A switched-in tool rises in like the page did on load.

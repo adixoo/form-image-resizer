@@ -10,6 +10,7 @@ import { Moon, Sun } from "lucide-react"
 import { LanguageSelect } from "@/components/site/language-select"
 import { getTranslator } from "@/i18n/messages"
 import { DEFAULT_LOCALE, LANGUAGES, LOCALES, localizedPath, type Locale } from "@/i18n/routing"
+import { KEYWORDS } from "@/lib/brand"
 import { absoluteUrl, OG_LOCALE } from "@/lib/seo-content"
 
 interface Props {
@@ -63,6 +64,7 @@ const csp = [
     <meta name="referrer" content="no-referrer" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="keywords" content={KEYWORDS} />
     {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#18181b" media="(prefers-color-scheme: dark)" />
