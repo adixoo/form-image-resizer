@@ -124,6 +124,13 @@ const csp = [
         })
       })()
     </script>
+    {/* Cloudflare Web Analytics. is:inline keeps Astro from bundling the external beacon. */}
+    <script
+      is:inline
+      type="module"
+      src="https://static.cloudflareinsights.com/beacon.min.js"
+      data-cf-beacon='{"token": "95b052ef52c444fa99a0403a3f664404"}'
+    ></script>
   </head>
   <body class="flex min-h-full flex-col" data-tool={bodyTool}>
     <a
