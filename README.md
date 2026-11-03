@@ -2,7 +2,7 @@
 
 Resize photos and signatures to the exact KB limit of Indian government and exam forms, compress PDFs, put both sides of an ID card on one A4 page, and merge PDFs. Available in English and 10 Indian languages.
 
-Everything runs in the browser. Files never leave the device: there is no server code, and the Content Security Policy blocks the page from sending data anywhere (`connect-src 'self'`).
+Everything runs in the browser. Files never leave the device: there is no server code, and the Content Security Policy blocks the page from sending data anywhere except Cloudflare Web Analytics page-view beacons (`connect-src 'self' https://cloudflareinsights.com`).
 
 ## Stack
 

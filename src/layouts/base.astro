@@ -37,17 +37,18 @@ const ogImage = new URL("/og.png", site).href
 // JSON unicode escape instead.
 const BACKSLASH = String.fromCharCode(92)
 
-// Files are processed entirely in the browser. connect-src 'self' stops the
-// page from sending anything to another server. 'wasm-unsafe-eval' lets pdf.js
-// run its WebAssembly image decoders; it does not allow eval(). Hosting adds
-// the header-only directives (frame-ancestors, …) from vercel.json.
+// Files are processed entirely in the browser. connect-src stops the page from
+// sending anything to another server, except Cloudflare Web Analytics page-view
+// beacons (no file data). 'wasm-unsafe-eval' lets pdf.js run its WebAssembly
+// image decoders; it does not allow eval(). Hosting adds the header-only
+// directives (frame-ancestors, …) from vercel.json; keep the two in sync.
 const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'",
+  "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://static.cloudflareinsights.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' blob: data:",
   "font-src 'self'",
-  `connect-src 'self'${import.meta.env.DEV ? " ws:" : ""}`,
+  `connect-src 'self' https://cloudflareinsights.com${import.meta.env.DEV ? " ws:" : ""}`,
   "worker-src 'self' blob:",
   "object-src 'none'",
   "base-uri 'self'",
