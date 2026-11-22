@@ -370,6 +370,7 @@
 body:not([data-tool="image"]) [data-seo-for="image"],
 body:not([data-tool="pdf"]) [data-seo-for="pdf"],
 body:not([data-tool="idCard"]) [data-seo-for="idCard"],
-body:not([data-tool="merge"]) [data-seo-for="merge"] {
+body:not([data-tool="merge"]) [data-seo-for="merge"],
+body:not([data-tool="toPdf"]) [data-seo-for="toPdf"] {
   display: none;
 }

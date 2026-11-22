@@ -30,6 +30,7 @@ const LOADERS: Record<ToolId, () => Promise<ToolComponent>> = {
   pdf: () => import("@/components/pdf/pdf-compress-app").then((m) => m.PdfCompressApp),
   idCard: () => import("@/components/id-card/id-card-app").then((m) => m.IdCardApp),
   merge: () => import("@/components/pdf/pdf-merge-app").then((m) => m.PdfMergeApp),
+  toPdf: () => import("@/components/pdf/image-to-pdf-app").then((m) => m.ImageToPdfApp),
 }
 const READY: Partial<Record<ToolId, ToolComponent>> = {}
 const PRELOADS: Partial<Record<ToolId, Promise<void>>> = {}
@@ -52,7 +53,7 @@ function ToolPanel({ id, prefill }: { id: ToolId; prefill?: Prefill }) {
 }
 
 /**
- * The whole page body: hero, tool tabs, the shared files bar and all four
+ * The whole page body: hero, tool tabs, the shared files bar and every
  * tools. Tabs switch tools in place (no page load) and keep the address bar,
  * title and back button in sync. A tool mounts when first opened and then
  * stays mounted, so switching back shows exactly what was left there.

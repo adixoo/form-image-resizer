@@ -17,7 +17,8 @@
     "image": "Photo & sign",
     "pdf": "PDF size",
     "idCard": "ID card",
-    "merge": "Merge PDF"
+    "merge": "Merge PDF",
+    "toPdf": "Image to PDF"
   },
   "common": {
     "remove": "Remove",
@@ -151,6 +152,17 @@
     "resultBody": "{pages} · {size}",
     "pickMore": "Tap more files in Your files to add them. Tap a checked file to take it out."
   },
+  "toPdf": {
+    "metaTitle": "Convert Image to PDF Online – Free JPG to PDF",
+    "metaDescription": "Turn a photo, scan or JPG into a PDF in seconds, fitted to A4 if you like. Free, private, nothing is uploaded.",
+    "title": "Convert an image to PDF",
+    "subtitle": "Turn one photo or scan into a PDF, ready to upload.",
+    "a4": "Fit on an A4 page",
+    "a4Hint": "The image is placed on A4 paper with a small margin. Turn off to keep the image's own size.",
+    "noFile": "Add an image to convert.",
+    "done": "Your PDF is ready.",
+    "resultBody": "1 page · {size}"
+  },
   "errors": {
     "unknown": "Something went wrong. Please try again.",
     "notImage": "That doesn't look like an image. Please choose a JPG or PNG file.",
@@ -229,6 +241,14 @@
         "s2b": "Move files up or down. Turn on A4 to make every page the same size.",
         "s3t": "Merge and download",
         "s3b": "Get one PDF with all your pages."
+      },
+      "toPdf": {
+        "s1t": "Add your image",
+        "s1b": "Pick a photo, scan or screenshot (JPG, PNG, WebP or HEIC).",
+        "s2t": "Choose the page",
+        "s2b": "Keep it on A4 paper, or let the PDF match the image.",
+        "s3t": "Download the PDF",
+        "s3b": "Get a one-page PDF you can upload to any form."
       }
     },
     "faq": {
@@ -255,6 +275,14 @@
         "a2": "No fixed limit. Very large files depend on your device's memory, because everything happens in your browser.",
         "q3": "Are my files uploaded?",
         "a3": "No. Merging happens on your own device; nothing is sent anywhere."
+      },
+      "toPdf": {
+        "q1": "Which image types can I convert?",
+        "a1": "JPG, PNG, WebP and HEIC photos and scans. Transparent areas become white.",
+        "q2": "Can I put several images in one PDF?",
+        "a2": "This tool makes a PDF from one image. To join several images or PDFs, use Merge PDF.",
+        "q3": "Is my image uploaded?",
+        "a3": "No. The PDF is made on your own device; nothing is sent anywhere."
       }
     },
     "landing": {

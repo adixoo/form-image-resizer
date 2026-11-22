@@ -107,7 +107,7 @@ export function useLibrary(): LibraryFile[] {
 // The files bar hands files to whichever tool is on screen, and each tool
 // reports back which files it is using so the bar can mark them.
 
-export type ToolId = "image" | "pdf" | "idCard" | "merge"
+export type ToolId = "image" | "pdf" | "idCard" | "merge" | "toPdf"
 
 let queue: { tool: ToolId; file: File }[] = []
 const queueListeners = new Set<() => void>()
