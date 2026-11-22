@@ -13,6 +13,7 @@ import { formatKB, imageToJpeg } from "@/lib/compress"
 import { AppError, toAppError } from "@/lib/errors"
 import { fileKind, useIncomingFile, useReportInUse } from "@/lib/file-library"
 import { mergeToPdf } from "@/lib/pdf"
+import { cn } from "@/lib/utils"
 
 interface Result {
   url: string
@@ -127,14 +128,53 @@ export function ImageToPdfApp() {
 
       <ErrorAlert error={error} />
 
-      {!result && working && <ResultSkeleton label={tc("working")} previews={0} />}
+      {!result && working && <ResultSkeleton label={tc("working")} previews={1} />}
 
-      {result && (
+      {result && thumb && (
         <ResultCard
+          split
           title={tc("readyTitle")}
           description={t("resultBody", { size: formatKB(result.blob.size) })}
           download={{ url: result.url, blob: result.blob, fileName: `${name}.pdf`, format: tc("pdf") }}
-        />
+        >
+          <PagePreview url={thumb} a4={a4} />
+        </ResultCard>
+      )}
+    </div>
+  )
+}
+
+/**
+ * The PDF page as mergeToPdf lays it out: with A4, the image fitted and centred
+ * on an A4 sheet (landscape for wide images) inside a 10 mm margin; without, the
+ * page is the image itself.
+ */
+function PagePreview({ url, a4 }: { url: string; a4: boolean }) {
+  const [landscape, setLandscape] = useState(false)
+  const img = (
+    <img
+      src={url}
+      alt=""
+      onLoad={(e) => setLandscape(e.currentTarget.naturalWidth > e.currentTarget.naturalHeight)}
+      className={cn("object-contain", a4 ? "size-full" : "max-h-96 max-w-full rounded-sm")}
+    />
+  )
+  return (
+    <div className="flex justify-center">
+      {a4 ? (
+        <div
+          className={cn(
+            "relative max-w-full rounded-sm bg-white",
+            landscape ? "aspect-[297/210] w-full md:max-w-md" : "aspect-[210/297] h-96"
+          )}
+        >
+          {/* 10 mm of 210 mm / 297 mm, as insets of the page box. */}
+          <div className={cn("absolute", landscape ? "inset-x-[3.37%] inset-y-[4.76%]" : "inset-x-[4.76%] inset-y-[3.37%]")}>
+            {img}
+          </div>
+        </div>
+      ) : (
+        img
       )}
     </div>
   )
