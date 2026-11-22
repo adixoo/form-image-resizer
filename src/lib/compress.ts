@@ -456,6 +456,12 @@ export function encode(canvas: AnyCanvas, type: OutputFormat, quality?: number):
   )
 }
 
+/** An image as a JPEG (white behind any transparency) plus its pixel size, for putting into a PDF. */
+export async function imageToJpeg(file: Blob): Promise<{ jpeg: Blob; w: number; h: number }> {
+  const canvas = await decode(file)
+  return { jpeg: await encode(canvas, "image/jpeg", 0.88), w: canvas.width, h: canvas.height }
+}
+
 /** KB as file managers show it (1 KB = 1024 bytes). */
 export function formatKB(bytes: number): string {
   return `${(bytes / 1024).toFixed(1)} KB`

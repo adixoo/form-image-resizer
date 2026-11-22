@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch"
 import { ErrorAlert } from "@/components/shared/error-alert"
 import { ResultCard, ResultSkeleton } from "@/components/shared/result-card"
 import { ToolCard, ToolStatus } from "@/components/shared/tool-card"
-import { decode, encode, formatKB } from "@/lib/compress"
+import { formatKB, imageToJpeg } from "@/lib/compress"
 import { AppError, toAppError } from "@/lib/errors"
 import { fileKind, useIncomingFile, useReportInUse } from "@/lib/file-library"
 import { motion, reducedMotion, type FlipState } from "@/lib/motion"
@@ -31,11 +31,6 @@ interface Merged {
 }
 
 let nextId = 0
-
-async function imageToJpeg(file: File) {
-  const canvas = await decode(file)
-  return { jpeg: await encode(canvas, "image/jpeg", 0.88), w: canvas.width, h: canvas.height }
-}
 
 export function PdfMergeApp() {
   const t = useTranslations("merge")
